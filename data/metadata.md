@@ -1,0 +1,25 @@
+model_data.rds: full, cleaned dataset of Heliconia acuminata plants joined with SPEI lagged up to 36 months. Only post-seedlings are included.
+
+- `ranch` (factor): Ranch name
+- `bdffp_reserve_no` (factor): official BDFFP reserve number
+- `plot` (factor): unique plot ID
+- `habitat` (factor): CF = continuous forest, 1-ha = 1 ha fragments
+- `ha_id_number` (factor): Unique plant ID number
+- `year` (numeric): year of survey (in Feb)
+- `ht` (numeric): height in cm
+- `ht_prev` (numeric):
+- `shts` (integer): number of shoots
+- `shts_prev` (integer):
+- `size` (numeric): height x number of shoots
+- `size_prev` (numeric):
+- `log_size` (numeric):
+- `log_size_prev` (numeric):
+- `infl_num` (integer): number of inflorescences (aka flower spikes)
+- `flwr` (integer): binary; did it flower?
+- `flwr_prev` (factor):
+- `surv` (integer): binary; is it alive?
+- `code_notes` (character): notes about missing plants, dead plants, missing tags, etc.  Safe to ignore I think.
+- `code2` (character): can ignore, nothing here
+- `spei` (numeric):
+- `spei_history` (c("matrix", "array")):
+- `L` (c("matrix", "array")):
