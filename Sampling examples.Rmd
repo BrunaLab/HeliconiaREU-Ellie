@@ -1,0 +1,71 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r setup}
+knitr::opts_chunk$set(paged.print = FALSE)
+```
+
+```{r}
+library(tidyverse)
+```
+
+Sampling random plant IDs
+
+```{r}
+plants <- unique(ha$ha_id_number)
+
+plant_sample <- sample(plants, 10)
+
+ha %>% filter(ha_id_number %in% plant_sample)
+```
+
+sampling years within plants
+
+```{r}
+ha %>% slice_sample(n = 10)
+
+ha %>% 
+  group_by(ha_id_number) %>%
+  slice_sample(n = 10)
+```
+reducing SPEI history
+
+```{r}
+ha %>% 
+  mutate(spei_short = spei_history[ , 1:12])
+```
+
+
+take many samples (with for-loop)
+
+```{r}
+out <- vector("list", 10)
+
+for (i in 1:10) {
+  plants <- unique(ha$ha_id_number)
+  
+  plant_sample <- sample(plants, 10)
+  
+  out[[i]] <- 
+    ha %>%
+    filter(ha_id_number %in% plant_sample)
+}
+out
+```
+
+
+With the `purrr` package
+
+```{r}
+library(purrr)
+
+out[[1]] %>% 
+  summarize(mean_ht = mean(ht, na.rm = TRUE))
+
+means <- map_df(out, ~ .x %>% summarize(mean_ht = mean(ht, na.rm = TRUE)))
+
+means
+means %>% map_dbl(~.x$mean_ht)
+```
+
