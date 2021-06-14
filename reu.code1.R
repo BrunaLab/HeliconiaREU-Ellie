@@ -7,8 +7,8 @@ library(dplyr)
 ha <- read_rds(here("data", "ha_data_subset.rds"))
 ha <- ha %>% mutate(spei = spei_history[,1], .before = spei_history)
 
-pops_to_sample <- 5
-plants_per_sample <- 25
+pops_to_sample <- 3
+plants_per_sample <- 100
 out <- vector("list", pops_to_sample)
 
 for (i in 1:pops_to_sample) {
@@ -25,19 +25,17 @@ out
 str(out)
 
 
-
+for (i in seq_along(out)){ 
 
 m <- gam(surv ~
            s(log_size_prev) + 
            te(spei_history, L, 
               bs = "cr"), 
          family = binomial, 
-         data = out[[5]],
+         data = out[[i]],
          method = "REML")
 summary(m)
 
+r.sq.gam <- print(summary(m)$r.sq)
+}
 
-summary.gam <- map_df(out, ~ .x %>% summary(m))
-
-
-summary.gam %>% map_dbl(~.x$m)
