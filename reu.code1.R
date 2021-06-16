@@ -1,41 +1,45 @@
+# all packages needed 
 library(purrr)
 library(tidyverse)
 library(mgcv)
 library(gratia)
 library(here)
 library(dplyr)
-ha <- read_rds(here("data", "ha_data_subset.rds"))
-ha <- ha %>% mutate(spei = spei_history[,1], .before = spei_history)
 
-pops_to_sample <- 3
-plants_per_sample <- 100
-out <- vector("list", pops_to_sample)
+ha <- read_rds(here("data", "ha_data_subset.rds")) # reading in data
+ha <- ha %>% mutate(spei = spei_history[,1], .before = spei_history) # mutating the spei_history column, creates one that just contains the first value labeled "spei"
 
-for (i in 1:pops_to_sample) {
+pops_to_sample <- 3 # population samples created
+plants_per_sample <- 100 # size of populations
+out <- vector("list", pops_to_sample) # create vector to store sample
+
+for (i in 1:pops_to_sample) { # looping sampling process
   plants <- unique(ha$ha_id_number)
   
   plant_sample <- sample(plants, plants_per_sample)
   
   out[[i]] <- 
     ha %>%
-    filter(ha_id_number %in% plant_sample)
+    filter(ha_id_number %in% plant_sample) # to get unique individuals
 }
 out
 
-str(out)
+str(out) # another way to look at sample pops
 
 
-for (i in seq_along(out)){ 
+
+for (i in seq_along(out)){ # loop for GAM
 
 m <- gam(surv ~
-           s(log_size_prev) + 
-           te(spei_history, L, 
-              bs = "cr"), 
-         family = binomial, 
-         data = out[[i]],
+           s(log_size_prev) + # 1D smooth for non-linear effect of size in previous year
+           te(spei_history, L, # tensor product 2D smooth for lagged SPEI effect
+              bs = "cr"), # use "cr" basis for each marginal dimension (this can be changed in dif situations)
+         family = binomial, # because response is 1 or 0
+         data = out[[i]], 
          method = "REML")
-summary(m)
 
-r.sq.gam <- print(summary(m)$r.sq)
+summary(m)$r.sq # pulling out r squared value
+
+r.sq.gam <- summary(m)$r.sq # storing r squared value
 }
 
