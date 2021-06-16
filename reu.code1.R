@@ -27,7 +27,7 @@ out
 str(out) # another way to look at sample pops
 
 
-
+r.sq.gam <- vector("numeric", length = length(out))
 for (i in seq_along(out)){ # loop for GAM
 
 m <- gam(surv ~
@@ -40,6 +40,6 @@ m <- gam(surv ~
 
 summary(m)$r.sq # pulling out r squared value
 
-r.sq.gam <- summary(m)$r.sq # storing r squared value
+r.sq.gam[i] <- summary(m)$r.sq # storing r squared value
 }
-
+r.sq.gam
