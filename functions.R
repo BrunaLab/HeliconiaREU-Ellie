@@ -26,7 +26,7 @@ get_results <- function(sample_list) {
 }
 
 
-make_samples <- function(ha, plants_per_sample, pops_to_sample = 3) {
+make_samples <- function(df, plants_per_sample, pops_to_sample = 3) {
   out <- vector("list", pops_to_sample) # create vector to store sample
   
   for (i in 1:pops_to_sample) { # looping sampling process
