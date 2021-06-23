@@ -5,13 +5,13 @@ library(gratia)
 library(here)
 library(dplyr)
 
-ha <- read_rds(here("data", "ha_data_subset.rds")) # reading in data
+ha <- read_rds(here("data", "model_data.rds")) # reading in data
 ha <- ha %>% mutate(spei = spei_history[,1], .before = spei_history) # mutating the spei_history column, creates one that just contains the first value labeled "spei"
 # im not sure if the for loop should go here or line 13
 plants_per_sample <- seq(5000,500,by = -500) # this gets an error for taking too many samples because it isnt looping
 # for (something in plants_per_sample??? maybe) {
 
-pops_to_sample <- 1 # population samples created (is one an okay number for this?)
+pops_to_sample <- 3 # population samples created (is one an okay number for this?)
 
 out <- vector("list", pops_to_sample) # create vector to store sample
 
