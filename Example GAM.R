@@ -57,12 +57,12 @@ gratia::draw(m)
 # I used the `dlnm` package to fit these models.  It creates a "crossbasis function" which is almost exactly the same as the te() tensor product above. 
 
 library(dlnm)
-
+library(gratia)
 m2 <- gam(surv ~
            s(log_size_prev) + # 1D smooth for non-linear effect of size in previous year
            s(spei_history, L,
              bs = "cb", # use crossbasis smooth from dlnm package
-             xt = list(bs = "cr")), # use "cr" basis for each marginal dimension
+             xt = list(bs = c("cr","ps"))), # use "cr" basis for each marginal dimension
          family = binomial, # because response is 1 or 0
          data = ha,
          method = "REML")
@@ -72,3 +72,6 @@ summary(m2)
 
 draw(m2)
 # surface also looks slightly different.  It looks more symmetrical around SPEI = 0.
+readline("install from source?")
+install.packages("gratia")
+no
