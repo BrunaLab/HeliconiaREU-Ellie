@@ -29,7 +29,7 @@ model_stats <- function(data) { #creates the gam and extracts the desired parame
 
 
 #ERS this actually fits the models AND extracts the results.  That's probably the best way to do this so there isn't a giant list of model objects in memory, but make sure the comments (and maybe function name?) reflect this.  I was not expecting this function to be the one that takes the longest based on the name.
-results <- function(sample_list) { # stores results
+get_results <- function(sample_list) { # stores results
   df_list <- vector("list", length(sample_list)) # create vector to store sample
   for (i in seq_along(sample_list)) {
     tic(i)
@@ -42,7 +42,7 @@ results <- function(sample_list) { # stores results
 }
 
 
-samples <- function(df, plants_per_sample, n_samples) { # creates random samples
+make_samples <- function(df, plants_per_sample, n_samples) { # creates random samples
   out <- vector("list", n_samples) # create vector to store sample
   
   for (i in 1:n_samples) { # looping sampling process
@@ -62,7 +62,10 @@ samples <- function(df, plants_per_sample, n_samples) { # creates random samples
 # sample_5000 <- samples(plants_per_sample = 5000, n_samples = 2)
 # sample_4500 <- samples(plants_per_sample = 4500, n_samples = 2)
 # sample_4000 <- samples(plants_per_sample = 4000, n_samples = 2)
-# sample_3500 <- samples(plants_per_sample = 3500, n_samples = 2)
+tic()
+sample_3500 <- samples(plants_per_sample = 3500, n_samples = 25)
+results(sample_3500)
+toc()
 # sample_3000 <- samples(plants_per_sample = 3000, n_samples = 2)
 # sample_2500 <- samples(plants_per_sample = 2500, n_samples = 2)
 # sample_2000 <- samples(plants_per_sample = 2000, n_samples = 2)
