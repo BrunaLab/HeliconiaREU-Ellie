@@ -10,13 +10,13 @@ ha <- ha %>% mutate(spei = spei_history[,1], .before = spei_history) # mutating 
 # im not sure if the for loop should go here or line 13 #ERS: is this an old comment?
 
 model_stats <- function(data) { #creates the gam and extracts the desired parameters
-  m <- gam(surv ~
+  m <- bam(surv ~
              s(log_size_prev) + 
              te(spei_history, L, 
                 bs = "cr"), 
            family = binomial, 
            data = data, 
-           method = "REML")
+           method = "fREML")
   #ERS: Using te() is fine for now, but would be good to do this with the DLNM package like so:
   # s(spei_history, L, bs = "cb", xt = list(bs = "cr"))
   
@@ -41,10 +41,10 @@ results <- function(sample_list) { # stores results
 }
 
 
-samples <- function(df, plants_per_sample, pops_to_sample) { # creates random samples
-  out <- vector("list", pops_to_sample) # create vector to store sample
+samples <- function(df, plants_per_sample, n_samples) { # creates random samples
+  out <- vector("list", n_samples) # create vector to store sample
   
-  for (i in 1:pops_to_sample) { # looping sampling process
+  for (i in 1:n_samples) { # looping sampling process
     plants <- unique(ha$ha_id_number)
     
     plant_sample <- sample(plants, plants_per_sample)
@@ -58,16 +58,16 @@ samples <- function(df, plants_per_sample, pops_to_sample) { # creates random sa
 
 # use of the functions
 # seq(5000,500,by=-500)
-# sample_5000 <- samples(plants_per_sample = 5000, pops_to_sample = 2)
-# sample_4500 <- samples(plants_per_sample = 4500, pops_to_sample = 2)
-# sample_4000 <- samples(plants_per_sample = 4000, pops_to_sample = 2)
-# sample_3500 <- samples(plants_per_sample = 3500, pops_to_sample = 2)
-# sample_3000 <- samples(plants_per_sample = 3000, pops_to_sample = 2)
-# sample_2500 <- samples(plants_per_sample = 2500, pops_to_sample = 2)
-# sample_2000 <- samples(plants_per_sample = 2000, pops_to_sample = 2)
-# sample_1500 <- samples(plants_per_sample = 1500, pops_to_sample = 2)
-# sample_1000 <- samples(plants_per_sample = 1000, pops_to_sample = 2)
-sample_500 <-  samples(plants_per_sample = 500, pops_to_sample = 15)
+# sample_5000 <- samples(plants_per_sample = 5000, n_samples = 2)
+# sample_4500 <- samples(plants_per_sample = 4500, n_samples = 2)
+# sample_4000 <- samples(plants_per_sample = 4000, n_samples = 2)
+# sample_3500 <- samples(plants_per_sample = 3500, n_samples = 2)
+# sample_3000 <- samples(plants_per_sample = 3000, n_samples = 2)
+# sample_2500 <- samples(plants_per_sample = 2500, n_samples = 2)
+# sample_2000 <- samples(plants_per_sample = 2000, n_samples = 2)
+# sample_1500 <- samples(plants_per_sample = 1500, n_samples = 2)
+# sample_1000 <- samples(plants_per_sample = 1000, n_samples = 2)
+sample_500 <-  samples(plants_per_sample = 500, n_samples = 15)
 
 tic.clearlog()
 results(sample_500)# extracts parameters in a tibble
