@@ -1,3 +1,13 @@
+library(tidyverse)
+library(mgcv)
+library(gratia)
+library(here)
+library(tictoc)
+
+ha <- read_rds(here("data", "model_data.rds")) # reading in data
+ha <- ha %>% mutate(spei = spei_history[,1], .before = spei_history) # mutating the spei_history column, creates one that just contains the first value labeled "spei"
+# im not sure if the for loop should go here or line 13
+
 model_stats <- function(data) { #creates the gam and extracts the desired parameters
   m <- gam(surv ~
              s(log_size_prev) + 
@@ -18,7 +28,10 @@ model_stats <- function(data) { #creates the gam and extracts the desired parame
 results <- function(sample_list) { # stores results
   df_list <- vector("list", length(sample_list)) # create vector to store sample
   for (i in seq_along(sample_list)) {
+    tic(i)
+    
     df_list[[i]] <- model_stats(sample_list[[i]])
+    toc(log = TRUE, quiet = TRUE)
   }
   out <- bind_rows(df_list)
   return(out)
@@ -51,7 +64,11 @@ sample_2500 <- samples(plants_per_sample = 2500, pops_to_sample = 2)
 sample_2000 <- samples(plants_per_sample = 2000, pops_to_sample = 2)
 sample_1500 <- samples(plants_per_sample = 1500, pops_to_sample = 2)
 sample_1000 <- samples(plants_per_sample = 1000, pops_to_sample = 2)
-sample_500 <-  samples(plants_per_sample = 500, pops_to_sample = 2)
+sample_500 <-  samples(plants_per_sample = 500, pops_to_sample = 15)
 
-results(sample_500) # extracts parameters in a tibble
-
+tic.clearlog()
+results(sample_500)# extracts parameters in a tibble
+log.txt <- tic.log(format = TRUE)
+log.lst <- tic.log(format = FALSE)
+timings <- unlist(lapply(log.lst, function(x) x$toc - x$tic))
+timing_sum <- sum(timings)
