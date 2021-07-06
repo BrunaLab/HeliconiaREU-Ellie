@@ -91,24 +91,36 @@ samples <- function(df, plants_per_sample, pops_to_sample) { # creates random sa
 
 # use of the functions
 seq(5000,500,by=-500)
-sample_5000 <- samples(plants_per_sample = 5000, pops_to_sample = 2)
-sample_4500 <- samples(plants_per_sample = 4500, pops_to_sample = 2)
-sample_4000 <- samples(plants_per_sample = 4000, pops_to_sample = 2)
-sample_3500 <- samples(plants_per_sample = 3500, pops_to_sample = 2)
-sample_3000 <- samples(plants_per_sample = 3000, pops_to_sample = 2)
-sample_2500 <- samples(plants_per_sample = 2500, pops_to_sample = 2)
-sample_2000 <- samples(plants_per_sample = 2000, pops_to_sample = 2)
-sample_1500 <- samples(plants_per_sample = 1500, pops_to_sample = 2)
-sample_1000 <- samples(plants_per_sample = 1000, pops_to_sample = 2)
-sample_500 <-  samples(plants_per_sample = 500, pops_to_sample = 15)
+sample_5000 <- samples(plants_per_sample = 5000, pops_to_sample = 10)
+sample_4500 <- samples(plants_per_sample = 4500, pops_to_sample = 25)
+sample_4000 <- samples(plants_per_sample = 4000, pops_to_sample = 25)
+sample_3500 <- samples(plants_per_sample = 3500, pops_to_sample = 25)
+sample_3000 <- samples(plants_per_sample = 3000, pops_to_sample = 25)
+sample_2500 <- samples(plants_per_sample = 2500, pops_to_sample = 25)
+sample_2000 <- samples(plants_per_sample = 2000, pops_to_sample = 25)
+sample_1500 <- samples(plants_per_sample = 1500, pops_to_sample = 25)
+sample_1000 <- samples(plants_per_sample = 1000, pops_to_sample = 25)
+sample_500 <-  samples(plants_per_sample = 500, pops_to_sample = 25)
+
+
+# TODO? make it generic, allows you to convert to a function to run as loops
+plants_per_sample = 500
+pops_to_sample = 25
+model_output_all_n <-  samples(plants_per_sample, pops_to_sample)
+
+
+
 
 
 # Timing how long it takes to run GAM and extract key results -------------
 
 tic.clearlog()
-extracted_GAM_results <- results(sample_500)# extracts parameters in a tibble
+extracted_GAM_results <- results(sample_5000)# extracts parameters in a tibble
 log.txt <- tic.log(format = TRUE)
 log.lst <- tic.log(format = FALSE)
 timings <- unlist(lapply(log.lst, function(x) x$toc - x$tic))
 timing_sum <- sum(timings)
-
+timing_sum
+timing_avg <- mean(timings)
+timing_avg
+timing_sd <- sd(timings)
