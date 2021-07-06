@@ -28,6 +28,7 @@ model_stats <- function(data) { #creates the gam and extracts the desired parame
 }
 
 
+#ERS this actually fits the models AND extracts the results.  That's probably the best way to do this so there isn't a giant list of model objects in memory, but make sure the comments (and maybe function name?) reflect this.  I was not expecting this function to be the one that takes the longest based on the name.
 results <- function(sample_list) { # stores results
   df_list <- vector("list", length(sample_list)) # create vector to store sample
   for (i in seq_along(sample_list)) {
