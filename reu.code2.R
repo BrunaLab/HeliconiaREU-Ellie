@@ -1,14 +1,43 @@
+
+# Overview ----------------------------------------------------------------
+
+# TODO: Needs a description of the code and what it is for
+
+# TODO: file names need to be changed to be more informative
+# see the tidyverse style guide: https://style.tidyverse.org/files.html#names
+
+
+# Load Required packages --------------------------------------------------
+
+# TODO: I find it useful to put in a reminder of what packages are being used for
+# (obs. not necessary for things like tidyverse, just the ones that have a
+# specific purpose or task, like tictoc)
+
 library(tidyverse)
 library(mgcv)
 library(gratia)
 library(here)
-library(tictoc)
+library(tictoc) # used for timing how long it takes to _____
 
-ha <- read_rds(here("data", "model_data.rds")) # reading in data
-ha <- ha %>% mutate(spei = spei_history[,1], .before = spei_history) # mutating the spei_history column, creates one that just contains the first value labeled "spei"
+
+# read in the data  -------------------------------------------------------
+
+ha <- read_rds(here("data", "model_data.rds"))
+
+
+# prepare data for analyses -----------------------------------------------
+
+# mutating the spei_history column, creates one that just contains 
+# the first value labeled "spei"
+ha <- ha %>% mutate(spei = spei_history[,1], .before = spei_history) 
+
+
+# Function that does XYZ  -------------------------------------------------
+
 # im not sure if the for loop should go here or line 13
 
-model_stats <- function(data) { #creates the gam and extracts the desired parameters
+#creates the gam and extracts the desired parameters
+model_stats <- function(data) { 
   m <- gam(surv ~
              s(log_size_prev) + 
              te(spei_history, L, 
@@ -24,6 +53,7 @@ model_stats <- function(data) { #creates the gam and extracts the desired parame
   return(df)
 }
 
+# Function that does XYZ  -------------------------------------------------
 
 results <- function(sample_list) { # stores results
   df_list <- vector("list", length(sample_list)) # create vector to store sample
@@ -37,6 +67,7 @@ results <- function(sample_list) { # stores results
   return(out)
 }
 
+# Function that does XYZ  -------------------------------------------------
 
 samples <- function(df, plants_per_sample, pops_to_sample) { # creates random samples
   out <- vector("list", pops_to_sample) # create vector to store sample
@@ -53,6 +84,11 @@ samples <- function(df, plants_per_sample, pops_to_sample) { # creates random sa
   return(out)
 }
 
+
+# Section Description Needed ----------------------------------------------
+
+
+
 # use of the functions
 seq(5000,500,by=-500)
 sample_5000 <- samples(plants_per_sample = 5000, pops_to_sample = 2)
@@ -66,9 +102,13 @@ sample_1500 <- samples(plants_per_sample = 1500, pops_to_sample = 2)
 sample_1000 <- samples(plants_per_sample = 1000, pops_to_sample = 2)
 sample_500 <-  samples(plants_per_sample = 500, pops_to_sample = 15)
 
+
+# Timing how long it takes to run GAM and extract key results -------------
+
 tic.clearlog()
-results(sample_500)# extracts parameters in a tibble
+extracted_GAM_results <- results(sample_500)# extracts parameters in a tibble
 log.txt <- tic.log(format = TRUE)
 log.lst <- tic.log(format = FALSE)
 timings <- unlist(lapply(log.lst, function(x) x$toc - x$tic))
 timing_sum <- sum(timings)
+
