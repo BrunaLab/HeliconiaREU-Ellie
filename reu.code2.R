@@ -20,7 +20,8 @@ model_stats <- function(data) { #creates the gam and extracts the desired parame
   #ERS: Using te() is fine for now, but would be good to do this with the DLNM package like so:
   # s(spei_history, L, bs = "cb", xt = list(bs = "cr"))
   
-  df <- tibble(r2 = summary(m)$r.sq, edf = summary(m)$edf[[1]], 
+  df <- tibble(r2 = summary(m)$r.sq, 
+               edf = summary(m)$edf[[2]], 
                rmse = sqrt(mean(residuals.gam(m,type="response")^2)), 
                pvalue = summary(m)$s.pv[[2]])
   # should i use [[1]] for the pvalue? not sure which one is important
