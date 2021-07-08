@@ -1,0 +1,41 @@
+---
+title: "REU Project"
+author: "Elizabeth McDaniel"
+date: "6/11/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction 
+
+For my Summer 2021 REU Project, I conceptualized and coded methods to test the conditions needed for use of the Functional Linear Model. By sampling from the lab's dataset of several thousand Heliconia plants tracked for a decade, I hoped to be able to specify assumptions that need to be met in order to use the Functional Linear Model to test for lagged effects.
+
+## Background and Context
+
+Understanding the consequences of habitat fragmentation is an essential question in conservation ecology. There is a general understanding that habitat fragmentation results in local extinction of plant species (cite). However, there is little research on the mechanisms that lead to those extinctions. This project attempts to remedy this using the collection and analysis of Heliconia plant growth and reproduction in fragmented and non-fragmented areas of the Brazilian Amazon. 
+
+In order to examine lagged effects of climate on growth and reproduction, the Functional Linear Model (FLM) was used on all available Heliconia data. Previous research involving FLMs posited that use of the technique requires huge datasets, and even up to 20 years of of collected data (cite). While the Heliconia dataset is large enough to meet the predicted assumptions for use of the FLM, most ecological datasets are not nearly as large. This leads to the question: what is the minimum amount of data necessary for effective use of the FLM? By treating the full Heliconia dataset as a population and sampling from it, some knowledge can be gained about the data necessary to run a FLM and get results that are truly representative of the population.  
+
+### Questions
+
+1. What is the effect of population size on effectiveness of the FLM? 
+
+1. Why does this matter?
+
+## General Approach and Statistical Methods
+
+While this is not a hypothesis driven experiment, I assume that at some point the reduction of sample data will render the FLM unusable, or at least ineffective. Repeated sampling of decreasing size from the Heliconia dataset will allow me to determine that point.
+
+I created three functions in order to sample and test the data. The first, "make_samples", created the samples, with size varying based on internal numerical changes. The second, "model_stats", ran the model on the sampled data, and the third, "get_results", extracted desired parameters from the model.  
+
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
