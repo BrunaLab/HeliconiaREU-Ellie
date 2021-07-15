@@ -34,6 +34,7 @@ ha <- ha %>% mutate(spei = spei_history[,1], .before = spei_history)
 
 # Function that does XYZ  -------------------------------------------------
 
+
 #creates the gam and extracts the desired parameters
 model_stats <- function(data) { 
   m <- gam(surv ~
@@ -44,27 +45,29 @@ model_stats <- function(data) {
            data = data, 
            method = "REML")
   
-  df <- tibble(r2 = summary(m)$r.sq, 
-               edf = summary(m)$edf[[2]], 
-               rmse = sqrt(mean(residuals.gam(m,type="response")^2)), 
-               pvalue = summary(m)$s.pv[[2]])
-  return(df)
+  tibble(r2 = summary(m)$r.sq, 
+         edf = summary(m)$edf[[2]], 
+         rmse = sqrt(mean(residuals.gam(m,type="response")^2)), 
+         pvalue = summary(m)$s.pv[[2]])
 }
 
 # Function that does XYZ  -------------------------------------------------
 
 #ERS this actually fits the models AND extracts the results.  That's probably the best way to do this so there isn't a giant list of model objects in memory, but make sure the comments (and maybe function name?) reflect this.  I was not expecting this function to be the one that takes the longest based on the name.
+
 get_results <- function(sample_list) { # stores results
   df_list <- vector("list", length(sample_list)) # create vector to store sample
   for (i in seq_along(sample_list)) {
-    tic(i)
+    # tic(i)
     
     df_list[[i]] <- model_stats(sample_list[[i]])
-    toc(log = TRUE, quiet = TRUE)
+    # toc(log = TRUE, quiet = TRUE)
   }
   out <- bind_rows(df_list)
   return(out)
 }
+
+
 
 # Function that does XYZ  -------------------------------------------------
 
@@ -84,33 +87,47 @@ make_samples <- function(df, plants_per_sample, n_samples) { # creates random sa
 }
 
 
+
 # Section Description Needed ----------------------------------------------
 
 
 
 # use of the functions
+# 
+# seq(5000,500,by=-500)
+# sample_5000 <- samples(plants_per_sample = 5000, pops_to_sample = 10)
+# sample_4500 <- samples(plants_per_sample = 4500, pops_to_sample = 25)
+# sample_4000 <- samples(plants_per_sample = 4000, pops_to_sample = 25)
+# sample_3500 <- samples(plants_per_sample = 3500, pops_to_sample = 25)
+# sample_3000 <- samples(plants_per_sample = 3000, pops_to_sample = 25)
+# sample_2500 <- samples(plants_per_sample = 2500, pops_to_sample = 25)
+# sample_2000 <- samples(plants_per_sample = 2000, pops_to_sample = 25)
+# sample_1500 <- samples(plants_per_sample = 1500, pops_to_sample = 25)
+sample_1000 <- make_samples(plants_per_sample = 1000, n_samples = 10) %>% 
+  set_names(paste0("plants_1000_", 1:10))
+sample_500 <-  make_samples(plants_per_sample = 500, n_samples = 10)
 
-seq(5000,500,by=-500)
-sample_5000 <- samples(plants_per_sample = 5000, pops_to_sample = 10)
-sample_4500 <- samples(plants_per_sample = 4500, pops_to_sample = 25)
-sample_4000 <- samples(plants_per_sample = 4000, pops_to_sample = 25)
-sample_3500 <- samples(plants_per_sample = 3500, pops_to_sample = 25)
-sample_3000 <- samples(plants_per_sample = 3000, pops_to_sample = 25)
-sample_2500 <- samples(plants_per_sample = 2500, pops_to_sample = 25)
-sample_2000 <- samples(plants_per_sample = 2000, pops_to_sample = 25)
-sample_1500 <- samples(plants_per_sample = 1500, pops_to_sample = 25)
-sample_1000 <- samples(plants_per_sample = 1000, pops_to_sample = 25)
-sample_500 <-  samples(plants_per_sample = 500, pops_to_sample = 25)
+sample_500 <- 
+  sample_500 %>% 
+  set_names(paste0("plants_500_", seq_along(sample_500)))
 
+big_list <- c(sample_1000, sample_500)
+library(purrr) 
+library(future)
+library(furrr)
 
-# TODO? make it generic, allows you to convert to a function to run as loops
-plants_per_sample = 500
-pops_to_sample = 25
-model_output_all_n <-  samples(plants_per_sample, pops_to_sample)
+plan(multisession, workers = 5) 
 
+tic()
 
+example <- furrr::future_map_dfr(big_list, model_stats, .id = "sample_id")
+toc()
+example <- example %>%
+  separate(sample_id, into = c("trash","n_plants", "rep")) %>% 
+  select(-trash) %>% 
+  mutate(n_plants = as.numeric(n_plants))
 
-
+plan(sequential)
 
 # Timing how long it takes to run GAM and extract key results -------------
 
