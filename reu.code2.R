@@ -1,16 +1,44 @@
+
+# Overview ----------------------------------------------------------------
+
+# TODO: Needs a description of the code and what it is for
+
+# TODO: file names need to be changed to be more informative
+# see the tidyverse style guide: https://style.tidyverse.org/files.html#names
+
+
+# Load Required packages --------------------------------------------------
+
+# TODO: I find it useful to put in a reminder of what packages are being used for
+# (obs. not necessary for things like tidyverse, just the ones that have a
+# specific purpose or task, like tictoc)
+
 library(tidyverse)
 library(mgcv)
 library(gratia)
 library(here)
-library(tictoc)
+library(tictoc) # used for timing how long it takes to _____
 
-ha <- read_rds(here("data", "model_data.rds")) # reading in data
-#ERS: short description of `ha` would be nice.  Include that two of the columns are matrix-columns.
-ha <- ha %>% mutate(spei = spei_history[,1], .before = spei_history) # mutating the spei_history column, creates one that just contains the first value labeled "spei"
-# im not sure if the for loop should go here or line 13 #ERS: is this an old comment?
 
-model_stats <- function(data) { #creates the gam and extracts the desired parameters
-  m <- bam(surv ~
+# read in the data  -------------------------------------------------------
+
+ha <- read_rds(here("data", "model_data.rds"))
+
+
+# prepare data for analyses -----------------------------------------------
+
+# mutating the spei_history column, creates one that just contains 
+# the first value labeled "spei"
+ha <- ha %>% mutate(spei = spei_history[,1], .before = spei_history) 
+
+
+# Function that does XYZ  -------------------------------------------------
+
+# im not sure if the for loop should go here or line 13
+
+#creates the gam and extracts the desired parameters
+model_stats <- function(data) { 
+  m <- gam(surv ~
              s(log_size_prev) + 
              te(spei_history, L, 
                 bs = "cr"), 
@@ -28,6 +56,7 @@ model_stats <- function(data) { #creates the gam and extracts the desired parame
   return(df)
 }
 
+# Function that does XYZ  -------------------------------------------------
 
 #ERS this actually fits the models AND extracts the results.  That's probably the best way to do this so there isn't a giant list of model objects in memory, but make sure the comments (and maybe function name?) reflect this.  I was not expecting this function to be the one that takes the longest based on the name.
 get_results <- function(sample_list) { # stores results
@@ -42,6 +71,7 @@ get_results <- function(sample_list) { # stores results
   return(out)
 }
 
+# Function that does XYZ  -------------------------------------------------
 
 make_samples <- function(df, plants_per_sample, n_samples) { # creates random samples
   out <- vector("list", n_samples) # create vector to store sample
@@ -58,25 +88,45 @@ make_samples <- function(df, plants_per_sample, n_samples) { # creates random sa
   return(out)
 }
 
+
+# Section Description Needed ----------------------------------------------
+
+
+
 # use of the functions
-# seq(5000,500,by=-500)
-# sample_5000 <- samples(plants_per_sample = 5000, n_samples = 2)
-# sample_4500 <- samples(plants_per_sample = 4500, n_samples = 2)
-# sample_4000 <- samples(plants_per_sample = 4000, n_samples = 2)
-tic()
-sample_3500 <- samples(plants_per_sample = 3500, n_samples = 25)
-results(sample_3500)
-toc()
-# sample_3000 <- samples(plants_per_sample = 3000, n_samples = 2)
-# sample_2500 <- samples(plants_per_sample = 2500, n_samples = 2)
-# sample_2000 <- samples(plants_per_sample = 2000, n_samples = 2)
-# sample_1500 <- samples(plants_per_sample = 1500, n_samples = 2)
-# sample_1000 <- samples(plants_per_sample = 1000, n_samples = 2)
-sample_500 <-  samples(plants_per_sample = 500, n_samples = 15)
+
+seq(5000,500,by=-500)
+sample_5000 <- samples(plants_per_sample = 5000, pops_to_sample = 10)
+sample_4500 <- samples(plants_per_sample = 4500, pops_to_sample = 25)
+sample_4000 <- samples(plants_per_sample = 4000, pops_to_sample = 25)
+sample_3500 <- samples(plants_per_sample = 3500, pops_to_sample = 25)
+sample_3000 <- samples(plants_per_sample = 3000, pops_to_sample = 25)
+sample_2500 <- samples(plants_per_sample = 2500, pops_to_sample = 25)
+sample_2000 <- samples(plants_per_sample = 2000, pops_to_sample = 25)
+sample_1500 <- samples(plants_per_sample = 1500, pops_to_sample = 25)
+sample_1000 <- samples(plants_per_sample = 1000, pops_to_sample = 25)
+sample_500 <-  samples(plants_per_sample = 500, pops_to_sample = 25)
+
+
+# TODO? make it generic, allows you to convert to a function to run as loops
+plants_per_sample = 500
+pops_to_sample = 25
+model_output_all_n <-  samples(plants_per_sample, pops_to_sample)
+
+
+
+
+
+# Timing how long it takes to run GAM and extract key results -------------
+
 
 tic.clearlog()
-results(sample_500)# extracts parameters in a tibble
+extracted_GAM_results <- results(sample_5000)# extracts parameters in a tibble
 log.txt <- tic.log(format = TRUE)
 log.lst <- tic.log(format = FALSE)
 timings <- unlist(lapply(log.lst, function(x) x$toc - x$tic))
 timing_sum <- sum(timings)
+timing_sum
+timing_avg <- mean(timings)
+timing_avg
+timing_sd <- sd(timings)
