@@ -34,8 +34,6 @@ ha <- ha %>% mutate(spei = spei_history[,1], .before = spei_history)
 
 # Function that does XYZ  -------------------------------------------------
 
-# im not sure if the for loop should go here or line 13
-
 #creates the gam and extracts the desired parameters
 model_stats <- function(data) { 
   m <- gam(surv ~
@@ -44,15 +42,12 @@ model_stats <- function(data) {
                 bs = "cr"), 
            family = binomial, 
            data = data, 
-           method = "fREML")
-  #ERS: Using te() is fine for now, but would be good to do this with the DLNM package like so:
-  # s(spei_history, L, bs = "cb", xt = list(bs = "cr"))
+           method = "REML")
   
   df <- tibble(r2 = summary(m)$r.sq, 
                edf = summary(m)$edf[[2]], 
                rmse = sqrt(mean(residuals.gam(m,type="response")^2)), 
                pvalue = summary(m)$s.pv[[2]])
-  # should i use [[1]] for the pvalue? not sure which one is important
   return(df)
 }
 
