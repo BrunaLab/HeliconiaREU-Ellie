@@ -1,4 +1,44 @@
-model_stats <- function(data) { #creates the gam and extracts the desired parameters
+
+# Overview ----------------------------------------------------------------
+
+# TODO: Needs a description of the code and what it is for
+
+# TODO: file names need to be changed to be more informative
+# see the tidyverse style guide: https://style.tidyverse.org/files.html#names
+
+
+# Load Required packages --------------------------------------------------
+
+# TODO: I find it useful to put in a reminder of what packages are being used for
+# (obs. not necessary for things like tidyverse, just the ones that have a
+# specific purpose or task, like tictoc)
+
+library(tidyverse)
+library(mgcv)
+library(gratia)
+library(here)
+library(tictoc) # used for timing how long it takes to _____
+library(purrr) 
+library(future)
+library(furrr)
+
+# read in the data  -------------------------------------------------------
+
+ha <- read_rds(here("data", "model_data.rds"))
+
+
+# prepare data for analyses -----------------------------------------------
+
+# mutating the spei_history column, creates one that just contains 
+# the first value labeled "spei"
+ha <- ha %>% mutate(spei = spei_history[,1], .before = spei_history) 
+
+
+# Function that does XYZ  -------------------------------------------------
+
+
+#creates the gam and extracts the desired parameters
+model_stats <- function(data) { 
   m <- gam(surv ~
              s(log_size_prev) + 
              te(spei_history, L, 
@@ -7,28 +47,36 @@ model_stats <- function(data) { #creates the gam and extracts the desired parame
            data = data, 
            method = "REML")
   
-  df <- tibble(r2 = summary(m)$r.sq, edf = summary(m)$edf[[1]], 
-               rmse = sqrt(mean(residuals.gam(m,type="response")^2)), 
-               pvalue = summary(m)$s.pv[[2]])
-  # should i use [[1]] for the pvalue? not sure which one is important
-  return(df)
+  tibble(r2 = summary(m)$r.sq, 
+         edf = summary(m)$edf[[2]], 
+         rmse = sqrt(mean(residuals.gam(m,type="response")^2)), 
+         pvalue = summary(m)$s.pv[[2]])
 }
 
+# Function that does XYZ  -------------------------------------------------
 
-results <- function(sample_list) { # stores results
+#ERS this actually fits the models AND extracts the results.  That's probably the best way to do this so there isn't a giant list of model objects in memory, but make sure the comments (and maybe function name?) reflect this.  I was not expecting this function to be the one that takes the longest based on the name.
+
+get_results <- function(sample_list) { # stores results
   df_list <- vector("list", length(sample_list)) # create vector to store sample
   for (i in seq_along(sample_list)) {
+    # tic(i)
+    
     df_list[[i]] <- model_stats(sample_list[[i]])
+    # toc(log = TRUE, quiet = TRUE)
   }
   out <- bind_rows(df_list)
   return(out)
 }
 
 
-samples <- function(df, plants_per_sample, pops_to_sample) { # creates random samples
-  out <- vector("list", pops_to_sample) # create vector to store sample
+
+# Function that does XYZ  -------------------------------------------------
+
+make_samples <- function(df, plants_per_sample, n_samples) { # creates random samples
+  out <- vector("list", n_samples) # create vector to store sample
   
-  for (i in 1:pops_to_sample) { # looping sampling process
+  for (i in 1:n_samples) { # looping sampling process
     plants <- unique(ha$ha_id_number)
     
     plant_sample <- sample(plants, plants_per_sample)
@@ -40,18 +88,58 @@ samples <- function(df, plants_per_sample, pops_to_sample) { # creates random sa
   return(out)
 }
 
-# use of the functions
-seq(5000,500,by=-500)
-sample_5000 <- samples(plants_per_sample = 5000, pops_to_sample = 2)
-sample_4500 <- samples(plants_per_sample = 4500, pops_to_sample = 2)
-sample_4000 <- samples(plants_per_sample = 4000, pops_to_sample = 2)
-sample_3500 <- samples(plants_per_sample = 3500, pops_to_sample = 2)
-sample_3000 <- samples(plants_per_sample = 3000, pops_to_sample = 2)
-sample_2500 <- samples(plants_per_sample = 2500, pops_to_sample = 2)
-sample_2000 <- samples(plants_per_sample = 2000, pops_to_sample = 2)
-sample_1500 <- samples(plants_per_sample = 1500, pops_to_sample = 2)
-sample_1000 <- samples(plants_per_sample = 1000, pops_to_sample = 2)
-sample_500 <-  samples(plants_per_sample = 500, pops_to_sample = 2)
 
-results(sample_500) # extracts parameters in a tibble
+
+# Section Description Needed ----------------------------------------------
+
+
+
+# use of the functions
+# 
+# seq(5000,500,by=-500)
+sample_5000 <- make_samples(plants_per_sample = 5000, n_samples = 500)
+set_names(paste0("plants_5000_", seq_along(sample_5000)))
+sample_4500 <- make_samples(plants_per_sample = 4500, n_samples = 500) 
+set_names(paste0("plants_4500_", seq_along(sample_4500)))
+sample_4000 <- make_samples(plants_per_sample = 4000, n_samples = 500)  
+set_names(paste0("plants_4000_", seq_along(sample_4000)))
+sample_3500 <- make_samples(plants_per_sample = 3500, n_samples = 500)
+set_names(paste0("plants_3500_", seq_along(sample_3500)))
+sample_3000 <- make_samples(plants_per_sample = 3000, n_samples = 500) 
+set_names(paste0("plants_3000_", seq_along(sample_3000)))
+sample_2500 <- make_samples(plants_per_sample = 2500, n_samples = 500) 
+set_names(paste0("plants_2500_", seq_along(sample_2500)))
+sample_2000 <- make_samples(plants_per_sample = 2000, n_samples = 500)
+set_names(paste0("plants_2000_", seq_along(sample_2000)))
+sample_1500 <- make_samples(plants_per_sample = 1500, n_samples = 500) 
+set_names(paste0("plants_1500_", seq_along(sample_1500)))
+sample_1000 <- make_samples(plants_per_sample = 1000, n_samples = 500) 
+set_names(paste0("plants_1000_", seq_along(sample_1000)))
+sample_500 <-  make_samples(plants_per_sample = 500, n_samples = 500)
+set_names(paste0("plants_500_", seq_along(sample_500)))
+
+
+big_list <- c(sample_5000, sample_4500, sample_4000, sample_3500, sample_3000,
+              sample_2500, sample_2000, sample_1500, sample_1000, sample_500)
+
+plan(multisession, workers = 3) 
+
+tic()
+
+example <- furrr::future_map_dfr(big_list, model_stats # should this be get_results?
+                                 , .id = "sample_id")
+example
+plot(example$r2)
+example$r2
+toc()
+example <- example %>%
+  separate(sample_id, into = c("trash","n_plants", "rep")) %>% 
+  select(-trash) %>% 
+  mutate(n_plants = as.numeric(n_plants))
+example
+plot(example$n_plants, example$r2)
+hist(example$r2)
+qqplot(example$r2,example$n_plants) # seems very useful, like boxplot
+?qqplot
+plan(sequential)
 
