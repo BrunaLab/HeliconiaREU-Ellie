@@ -37,5 +37,5 @@ names(x) <- paste0("plants_", x, "_")
 
 plan(multisession, workers = 3)
 
-future_map_df(.x = , .f= ~foo(.x, n_samples = 500))
-
+final_output <- future_map_df(.x = , .f= ~foo(.x, n_samples = 500))
+write_csv(final_output, here("num_plants_experiment.csv"))
