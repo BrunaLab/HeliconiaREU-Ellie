@@ -61,7 +61,7 @@ With the `purrr` package
 library(purrr)
 
 out[[1]] %>% 
-  summarize(mean_ht = mean(ht, na.rm = TRUE))
+  summary(mean_ht = mean(ht, na.rm = TRUE))
 
 means <- map_df(out, ~ .x %>% summarize(mean_ht = mean(ht, na.rm = TRUE)))
 

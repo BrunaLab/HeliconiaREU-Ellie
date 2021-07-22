@@ -18,7 +18,9 @@ library(mgcv)
 library(gratia)
 library(here)
 library(tictoc) # used for timing how long it takes to _____
-
+library(purrr) 
+library(future)
+library(furrr)
 
 # read in the data  -------------------------------------------------------
 
@@ -92,53 +94,57 @@ make_samples <- function(df, plants_per_sample, n_samples) { # creates random sa
 
 
 
-# use of the functions
-# 
-# seq(5000,500,by=-500)
-# sample_5000 <- samples(plants_per_sample = 5000, pops_to_sample = 10)
-# sample_4500 <- samples(plants_per_sample = 4500, pops_to_sample = 25)
-# sample_4000 <- samples(plants_per_sample = 4000, pops_to_sample = 25)
-# sample_3500 <- samples(plants_per_sample = 3500, pops_to_sample = 25)
-# sample_3000 <- samples(plants_per_sample = 3000, pops_to_sample = 25)
-# sample_2500 <- samples(plants_per_sample = 2500, pops_to_sample = 25)
-# sample_2000 <- samples(plants_per_sample = 2000, pops_to_sample = 25)
-# sample_1500 <- samples(plants_per_sample = 1500, pops_to_sample = 25)
-sample_1000 <- make_samples(plants_per_sample = 1000, n_samples = 10) %>% 
-  set_names(paste0("plants_1000_", 1:10))
-sample_500 <-  make_samples(plants_per_sample = 500, n_samples = 10)
+# Create samples
 
-sample_500 <- 
-  sample_500 %>% 
-  set_names(paste0("plants_500_", seq_along(sample_500)))
+n_samp <- 500
+sample_5000 <- make_samples(plants_per_sample = 5000, n_samples = n_samp)
+names(sample_5000) <- paste0("plants_5000_", seq_along(sample_5000))
+sample_4500 <- make_samples(plants_per_sample = 4500, n_samples = n_samp) 
+names(sample_4500) <- paste0("plants_4500_", seq_along(sample_4500))
+sample_4000 <- make_samples(plants_per_sample = 4000, n_samples = n_samp)  
+names(sample_4000) <- paste0("plants_4000_", seq_along(sample_4000))
+sample_3500 <- make_samples(plants_per_sample = 3500, n_samples = n_samp)
+names(sample_3500) <- paste0("plants_3500_", seq_along(sample_3500))
+sample_3000 <- make_samples(plants_per_sample = 3000, n_samples = n_samp) 
+names(sample_3000) <- paste0("plants_3000_", seq_along(sample_3000))
+sample_2500 <- make_samples(plants_per_sample = 2500, n_samples = n_samp) 
+names(sample_2500) <- paste0("plants_2500_", seq_along(sample_2500))
+sample_2000 <- make_samples(plants_per_sample = 2000, n_samples = n_samp)
+names(sample_2000) <- paste0("plants_2000_", seq_along(sample_2000))
+sample_1500 <- make_samples(plants_per_sample = 1500, n_samples = n_samp) 
+names(sample_1500) <- paste0("plants_1500_", seq_along(sample_1500))
+sample_1000 <- make_samples(plants_per_sample = 1000, n_samples = n_samp) 
+names(sample_1000) <- paste0("plants_1000_", seq_along(sample_1000))
+sample_500 <-  make_samples(plants_per_sample = 500, n_samples = n_samp)
+names(sample_500) <- paste0("plants_500_", seq_along(sample_500))
 
-big_list <- c(sample_1000, sample_500)
-library(purrr) 
-library(future)
-library(furrr)
+# combine into one big list to map over
+big_list <- c(sample_5000, sample_4500, sample_4000, sample_3500, sample_3000,
+              sample_2500, sample_2000, sample_1500, sample_1000, sample_500)
 
-plan(multisession, workers = 5) 
+# map the model_stats() function over the list
+plan(multisession, workers = 3) 
 
 tic()
-
-example <- furrr::future_map_dfr(big_list, model_stats, .id = "sample_id")
+example <- furrr::future_map_dfr(big_list, model_stats # should this be get_results?
+                                 , .id = "sample_id")
 toc()
+
+plan(sequential)
+
+# Examine results
+example
+plot(example$r2)
+example$r2
+
 example <- example %>%
   separate(sample_id, into = c("trash","n_plants", "rep")) %>% 
   select(-trash) %>% 
   mutate(n_plants = as.numeric(n_plants))
+example
+plot(example$n_plants, example$r2)
+hist(example$r2)
+qqplot(example$r2,example$n_plants) # seems very useful, like boxplot
+# ?qqplot
 
-plan(sequential)
 
-# Timing how long it takes to run GAM and extract key results -------------
-
-
-tic.clearlog()
-extracted_GAM_results <- results(sample_5000)# extracts parameters in a tibble
-log.txt <- tic.log(format = TRUE)
-log.lst <- tic.log(format = FALSE)
-timings <- unlist(lapply(log.lst, function(x) x$toc - x$tic))
-timing_sum <- sum(timings)
-timing_sum
-timing_avg <- mean(timings)
-timing_avg
-timing_sd <- sd(timings)

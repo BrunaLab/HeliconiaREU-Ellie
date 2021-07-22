@@ -9,41 +9,36 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Abstract 
-
-For my Summer 2021 REU Project, I will test the assumptions of the Functional Linear Models used to test for lagged effects of climatic extremes on plant demographic vital rates. These simulations will be conducted using a long-term dataset of plant demography and the R statistical programming language.
-
-
 ## Introduction
 
-Understanding the consequences of habitat fragmentation - the subdivision of once continuous habitats into smaller, isolated patches - is an essential question in conservation ecology. Habitat fragmentation has been shown to lead to the local extinction of plant species from patches (cite). However, there is little research on the mechanisms that lead to those extinctions (Bruna et al J Veg Sci). Previous work has found that vital rates such as growth and fecundity can be lower in habitat fragments than continuous forest, which is one potential mechanism that could contribute to these extinctions (citations). These reductions are often hypothesized to be the result of the current abiotic conditions in fragments (e.g., higher temperature, reduced relative humidity; citations). However, the extent to which historical conditions in fragments could influence vital rates remains unknown (citations). 
+For my Summer 2021 REU Project, I worked on testing the assumptions of GAMs used to test lagged effects of climate on survival and growth of Heliconia plants in the Brazilian Amazon.
 
-Functional Linear Models are a promissing means by which to asses how historical conditions influence present day demography. By ____, FMLs can be used to test for "lagged effects": ______.  However, previous research using FLMs to test for lagged effects posited that use of the technique requires that the dataset meet several assumptions, notably [a huge amount fo data, and even up to 20 years of of collected data: MAKE MORE SPECIFIC, at least X years of data] (cite). It is unknown, however, how robust FLMs are to deviations from these assumptions. 
+GAMs are Generalized Additive Models 
 
 ### Questions
 
-Using a large and long-term dataset of plant demography, I will test how deviations from these assumptions influence the ability of FLM to detectded lagged effects of climate on plant demographic vital rates. Specifically, I will 
+1. What is the effect of X on Y?
 
-1. What is the effect of population size on effectiveness of the FLM? 
-
-
-2. Wwhat is the minimum amount of data necessary for effective use of the FLM? By treating the full Heliconia dataset as a population and sampling from it, some knowledge can be gained about the data necessary to run a FLM and get results that are truly representative of the population.  
-
+1. Why does this matter?
 
 ## General Approach and Statistical Methods
 
-While this is not a hypothesis driven experiment, I assume that at some point the reduction of sample data will render the FLM unusable, or at least ineffective. Repeated sampling of decreasing size from the Heliconia dataset will allow me to determine that point.
+Here I will describe my methods.
 
-I created three functions in order to sample and test the data. The first, "make_samples", created the samples, with size varying based on internal numerical changes. The second, "model_stats", ran the model on the sampled data, and the third, "get_results", extracted desired parameters from the model.  
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
 
 ## Including Plots
 
-1. Plots for Questions 1
-
-  * R2 vs. sample size
-  * others?
+You can also embed plots, for example:
 
 ```{r pressure, echo=FALSE}
 plot(pressure)
 ```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

@@ -8,7 +8,7 @@ library(dplyr)
 ha <- read_rds(here("data", "model_data.rds")) # reading in data
 ha <- ha %>% mutate(spei = spei_history[,1], .before = spei_history) # mutating the spei_history column, creates one that just contains the first value labeled "spei"
 # im not sure if the for loop should go here or line 13
-plants_per_sample <- seq(5000,500,by = -500) # this gets an error for taking too many samples because it isnt looping
+plants_per_sample <- 100 # this gets an error for taking too many samples because it isnt looping
 # for (something in plants_per_sample??? maybe) {
 
 pops_to_sample <- 3 # population samples created (is one an okay number for this?)
@@ -41,7 +41,7 @@ m <- gam(surv ~
          method = "REML")
 
 summary(m)$r.sq # pulling out r squared value
-
+summary(m)
 r.sq.gam[i] <- summary(m)$r.sq # storing r squared value
 }
 r.sq.gam
