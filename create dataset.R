@@ -54,3 +54,5 @@ plan(sequential)
 final_output
 
 write_csv(final_output, here("num_plants_experiment.csv"))
+
+read.csv("https://github.com/BrunaLab/HeliconiaREU-Ellie/blob/4dd4b10a923aaa526b6e3f1c5253d5513293b4d1/num_plants_experiment.csv")

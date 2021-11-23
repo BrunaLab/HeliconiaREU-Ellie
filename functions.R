@@ -7,11 +7,10 @@ get_model_stats <- function(data) {
            data = data, 
            method = "REML")
   
-  df <- tibble(r2 = summary(m)$r.sq,
-               # rmsep = ,
-               # edf = ,
-               # pval = 
-                 )
+  df <- tibble(r2 = summary(m)$r.sq,  edf = summary(m)$edf[[2]], 
+               rmse = sqrt(mean(residuals.gam(m,type="response")^2)), 
+               pvalue = summary(m)$s.pv[[2]])
+                 
   return(df)
 }
 
@@ -41,8 +40,4 @@ make_samples <- function(df, plants_per_sample, pops_to_sample = 3) {
   return(out)
 }
 
-# Examples:
-sample_500 <- make_samples(ha=ha, plants_per_sample = 500, pops_to_sample = 2)
-sample_1000 <- make_samples(ha=ha, plants_per_sample = 1000, pops_to_sample = 2)
 
-get_results(sample_500)
