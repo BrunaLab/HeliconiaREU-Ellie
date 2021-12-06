@@ -1,6 +1,17 @@
 # HeliconiaREU-Ellie
-Summer 2021 Heliconia REU Project File
+2021 Heliconia REU Project File
 
-"big_list_approach.R" works in theory, but each list of re-sampled dataframes is very large and likely to run out of memory.
+# Project Description
 
-"untested solution.R"  also works in theory and should not run out of memory, but will likely be very slow.
+Working to understand the limitations of the modeling technique used in the @BrunaLab exploration of the lagged effects of climate variables on Helicona life history by:
+
+1. Running the GAM on increasingly smaller samples of plants from the full Heliconia dataset
+
+2. Running the GAM on increasingly smaller peroids of time from the full Heliconia dataset
+
+3. Combine the two first steps
+
+# Procedures
+ 
+- [x] 
+
